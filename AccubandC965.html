@@ -443,7 +443,6 @@
 
                 </div>
                 <div class="card-footer text-muted">
-                    <button class="btn btn-primary" type="button" onclick="navigate('NEXT');">NEXT</button>
                 </div>
 
             </div>
@@ -1397,6 +1396,7 @@
                 </div>
                 <div class="card-footer text-muted">
                     <button class="btn btn-primary" type="button" onclick="navigate('PREV');">PREVIOUS</button>
+                    <button class="btn btn-primary" type="button" onclick="navigate('NEXT');">NEXT</button>
                 </div>
 
             </div>
@@ -1507,10 +1507,9 @@
         }
 
         if (e.target.getAttribute('id') == "ItemBFMCSupplyOption") {
+            validateItemB('0');
             $("#AccubandCabinetOptions :input").prop("disabled", false); // enable  all element in a form after change
             document.getElementById("AccubandFMCPCTitle").disabled = true;
-
-            validateItemB('0');
         }
 
 
@@ -1864,75 +1863,6 @@
     }
 
     ///===========BUTTONS==================
-    function ScopeOfSupplyNEXT() {
-        //check if Mode of Operation is set to any value other than 0
-        var mode = document.getElementById("selectModeOfOperation").value;
-        var RXCSE = document.getElementById("gageLOcation").value;
-        var isWidthGage = (document.ApplicationForm.ProductType.value=='WIDTHGAGE');
-        var bVal = true;
-        if ((mode == '') && isWidthGage){
-            document.getElementById("selectModeOfOperation").style.color = 'red';
-            bVal=false;
-        }
-
-        if ((RXCSE == '') && (!isWidthGage)) {
-            document.getElementById("gageLOcation").style.color = 'red';
-            bVal=false;
-        }
- 
-
-        if (bVal) {
-            $('#RollDataBody').collapse("toggle");
-            $('#ScopeOfSupplyBody').collapse("toggle");
-        }
-    }
-    function RollDataPREVIOUS() {
-        $('#ScopeOfSupplyBody').collapse("toggle");
-        $('#RollDataBody').collapse("toggle");
-    }
-    function RollDataNEXT() {
-        //check if Mode of Operation is set to any value other than 0
-        if (document.getElementById("selectOpticsKit").value == '') {
-            document.getElementById("selectOpticsKit").style.color = 'red';
-        } else {
-            $('#ScannerHeadBody').collapse("toggle");
-            $('#RollDataBody').collapse("toggle");
-            validateScannerHead();
-        }
-    }
-    function ScannerHeadPREVIOUS() {
-        $('#RollDataBody').collapse("toggle");
-        $('#ScannerHeadBody').collapse("toggle");
-    }
-    function ScannerHeadNEXT() {
-        if (validateScannerHead()) {
-            $('#AccubandFMCBody').collapse("toggle");
-            $('#ScannerHeadBody').collapse("toggle");
-        }
-    }
-
-    
-    function AB6FMCPREVIOUS() {
-        $('#ScannerHeadBody').collapse("toggle");
-        $('#AccubandFMCBody').collapse("toggle");
-    }
-    function AB6FMCNEXT() {
-        if (true) {
-            $('#CalibratorBody').collapse("toggle");
-            $('#AccubandFMCBody').collapse("toggle");
-        }
-    }
-    function ItemCPREVIOUS() {
-        $('#AccubandFMCBody').collapse("toggle");
-        $('#CalibratorBody').collapse("toggle");
-    }
-    function ItemCNEXT() {
-        if (true) {
-            $('#OperatorBody').collapse("toggle");
-            $('#CalibratorBody').collapse("toggle");
-        }
-    }
-
 
 
     function secondASDHOption() {
@@ -2050,7 +1980,18 @@
         }
 
         var platformHeight = HT + HC + L - HAIC - HCCD;
-        platformHeight = (platformHeight > existPlatform) ? platformHeight : existPlatform;
+
+        if (platformHeight < existPlatform) {
+            platformHeight = existPlatform;
+            HT = platformHeight - HC - L + HAIC + HCCD;
+
+            CAMBER = Math.atan(S / (2 * HT)) * 180 / Math.PI;// ATAN(S / (2 * (HT + HC))) * 180 / PI()
+            AA = A / 2 - CAMBER; //Camera A 1st Edge Angle
+            AB = A / 2 + CAMBER;  //Camera A 1st Edge Angle
+            EAA = S / 2 + HHOP * Math.tan(AA * Math.PI / 180);
+            EAB = S / 2 + HHOP * Math.tan(AB * Math.PI / 180);
+            FOV = (EAA >= EAB) ? 2 * EAB : 2 * EAA;
+        } 
         HT = HT * 1 + HC * 1;
         var WB = Math.abs(2 * (-S / 2 + (HT * 1 + HB * 1) * Math.tan(AB * Math.PI / 180)));
 
